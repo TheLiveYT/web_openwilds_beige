@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenWilds - Minecraft Server</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <style>
+        @font-face {
+            font-family: 'GT Flaire';
+            src: url('SpicyRice-Regular.ttf') format('opentype');
+            font-weight: 800;
+            font-style: italic;
+        }
+
+        @font-face {
+            font-family: 'GT Flaire Light';
+            src: url('PTSerif-Regular.ttf') format('opentype');
+            font-weight: 200;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Inter SemiBold';
+            src: url('Inter_28pt-SemiBold.ttf') format('opentype');
+            font-weight: 200;
+            font-style: normal;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f5ebd9;
+            font-family: 'GT Flaire Light', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .gt-flaire {
+            font-family: 'GT Flaire', serif;
+            font-style: italic;
+            font-weight: 800;
+            color: #000;
+        }
+
+        .light-text {
+            font-family: 'GT Flaire Light', sans-serif;
+            font-weight: 200;
+        }
+
+        .bold-text {
+            font-family: 'Inter SemiBold', sans-serif;
+            font-weight: 200;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 60px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(245, 235, 217, 0.95);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            gap: 60px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            margin-right: 170px;
+            height: 50px;
+            width: auto;
+            transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+        }
+
+        .logo img:hover {
+           transform: rotate(90deg) scale(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #000;
+            font-weight: 300;
+            font-size: 16px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #000;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .store-btn {
+            padding: 10px 30px;
+            border: 2px solid #000;
+            background-color: transparent;
+            color: #000;
+            font-weight: 300;
+            cursor: pointer;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            margin-left: 170px;
+        }
+
+        .store-btn:hover {
+            background-color: #f5ebd9;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Menu Button */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background-color: #000;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background-color: #f5ebd9;
+            z-index: 999;
+            transition: right 0.3s ease;
+            padding: 100px 30px 30px;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .sidebar-links a {
+            text-decoration: none;
+            color: #000;
+            font-size: 24px;
+            font-weight: 300;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-links a:hover {
+            opacity: 0.7;
+        }
+
+        .sidebar .store-btn {
+            margin-top: 40px;
+            display: inline-block;
+            text-align: center;
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            margin-top: 80px;
+            overflow: hidden;
+        }
+
+        .icons-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            align-items: center;
+        }
+
+        .icons-container img {
+            width: 60px;
+            height: 60px;
+        }
+
+        .hero-title {
+            font-size: clamp(50px, 12vw, 180px);
+            margin-bottom: -30px;
+            letter-spacing: -2px;
+            margin-top: -100px;
+            transition: transform 0.3s ease;
+        }
+
+        .hero-title:hover{
+            transform: scale(1.05);
+        }
+
+        .hero-description {
+            font-size: clamp(18px, 5vw, 30px);
+            color: #515151;
+            margin-bottom: 40px;
+            max-width: 900px;
+            line-height: 1.6;
+            margin-top: -20px;
+            padding: 0 20px;
+        }
+
+        .play-btn {
+            padding: 18px 50px;
+            background: #5B9EEB;
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 400;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+            z-index: 1;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .arrow-icon {
+            width: 20px;
+            height: 20px;
+            fill: #000;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            margin-bottom: 80px;
+        }
+
+        .feature-card:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .feature-image {
+            flex: 1;
+            overflow: hidden;
+            border-radius: 20px;
+        }
+
+        .feature-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature-title {
+            font-size: clamp(32px, 6vw, 48px);
+            margin-bottom: 20px;
+        }
+
+        .feature-description {
+            font-size: clamp(16px, 3vw, 18px);
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1a1a1a;
+            color: #f5ebd9;
+            padding: 80px 60px 40px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 1400px;
+            margin: 0 auto 60px;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .footer-left {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .footer-community {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .footer-community input {
+            flex: 1;
+            max-width: 400px;
+            padding: 15px 20px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 2px solid #f5ebd9;
+            color: #f5ebd9;
+            font-family: 'GT Flaire Light', sans-serif;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .footer-community input::placeholder {
+            color: #f5ebd9;
+            opacity: 0.7;
+        }
+
+        .arrow-btn {
+            width: 50px;
+            height: 50px;
+            background-color: transparent;
+            border: 2px solid #f5ebd9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .arrow-btn:hover {
+            background-color: #f5ebd9;
+        }
+
+        .arrow-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: #f5ebd9;
+            transition: stroke 0.3s ease;
+        }
+
+        .arrow-btn:hover svg {
+            stroke: #1a1a1a;
+        }
+
+        .footer-title {
+            font-size: clamp(50px, 15vw, 120px);
+            margin-bottom: 30px;
+            color: #f5ebd9;
+            line-height: 0.9;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-title:hover{
+            transform: scale(1.02);
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 100px;
+        }
+
+        .footer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .footer-links a {
+            color: #f5ebd9;
+            text-decoration: none;
+            font-weight: 200;
+            font-size: 16px;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 0.7;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid #333;
+        }
+
+        .footer-tagline {
+            color: #f5ebd9;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .footer-copyright {
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 100px 60px;
+            background-color: #ede3cf;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: clamp(40px, 10vw, 64px);
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-number:hover{
+            transform: scale(1.1);
+        }
+
+        .stat-label {
+            font-size: clamp(16px, 3vw, 18px);
+            color: #333;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 120px 60px;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: clamp(36px, 10vw, 72px);
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .cta-description {
+            font-size: clamp(16px, 4vw, 20px);
+            color: #333;
+            margin-bottom: 50px;
+            line-height: 1.6;
+        }
+
+        .scroll-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            pointer-events: none;
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+        }
+
+        .row {
+            display: flex;
+            white-space: nowrap;
+            gap: 3rem;
+            font-weight: bold;
+            color: rgba(0,0,0,0.2);
+            font-size: clamp(2rem, 5vw, 4rem);
+            will-change: transform;
+        }
+
+        .word {
+            filter: blur(4px);
+        }
+
+        /* Tablet Styles */
+        @media (max-width: 1024px) {
+            nav {
+                padding: 20px 40px;
+            }
+
+            .logo img {
+                margin-right: 100px;
+            }
+
+            .nav-links {
+                gap: 30px;
+            }
+
+            .store-btn {
+                margin-left: 100px;
+            }
+
+            .features {
+                padding: 80px 40px;
+            }
+
+            .footer-right {
+                gap: 60px;
+            }
+            .hero-description{
+                margin-top: 20px;
+            }
+            .scroll-bg{
+                margin-top: 70px;
+            }
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            nav {
+                padding: 20px 30px;
+                gap: 0;
+                justify-content: space-between;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .store-btn {
+                display: none;
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .logo {
+                flex: 1;
+            }
+
+            .logo img {
+                margin-right: 0;
+                height: 40px;
+            }
+
+            .hero {
+                margin-top: 60px;
+            }
+
+            .hero-title {
+                margin-top: -50px;
+            }
+
+            .feature-card,
+            .feature-card:nth-child(even) {
+                flex-direction: column;
+                gap: 30px;
+                margin-bottom: 60px;
+            }
+
+            .features {
+                padding: 60px 30px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+            }
+
+            .footer-right {
+                gap: 50px;
+                width: 100%;
+            }
+
+            .stats-section {
+                padding: 60px 30px;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 40px;
+            }
+
+            .cta-section {
+                padding: 80px 30px;
+            }
+
+            footer {
+                padding: 60px 30px 30px;
+            }
+
+            .play-btn {
+                padding: 15px 35px;
+                font-size: 16px;
+            }
+            .hero-description{
+                margin-top: 30px;
+            }
+            .scroll-bg{
+                margin-top: 190px;
+            }
+        }
+
+        /* Small Mobile Styles */
+        @media (max-width: 480px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .footer-right {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .hero-title {
+                margin-bottom: -5px;
+                font-size: 70px;
+            }
+
+            .hero-description {
+                margin-top: -10px;
+                font-size: 16px;
+            }
+            .scroll-bg{
+                margin-top: 180px;
+            }
+        }
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            font-family: 'Inter SemiBold', sans-serif;
+            background: #111;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            min-width: 220px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+        }
+
+        @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        }
+
+        @keyframes fadeOut {
+        to {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        }
+
+
+        /* LOADER BACKGROUND */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #f5ebd9; /* cream */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease;
+        }
+
+        #loader.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* MINECRAFT LOADER */
+        .mc-loader {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mc-loader span {
+            width: 22px;
+            height: 22px;
+            background: #000;
+            image-rendering: pixelated;
+            animation: block 1.2s infinite ease-in-out;
+        }
+
+        .mc-loader span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .mc-loader span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes block {
+            0%, 80%, 100% {
+                transform: translateY(0);
+                opacity: 0.3;
+            }
+            40% {
+                transform: translateY(-14px);
+                opacity: 1;
+            }
+        }
+
+        /* CONTENT FADE */
+        #content {
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        #content.show {
+            opacity: 1;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="loader">
+    <div class="mc-loader">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</div>
+    <!-- Overlay for Mobile Menu -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="bold-text">
+        <div class="logo">
+            <img src="icon.png" alt="OpenWilds Logo">
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="https://openwilds.com/ticket">Tickets</a></li>
+            <li><a href="https://openwilds.com/rules">Rules</a></li>
+        </ul>
+        <a href="https://store.openwilds.com" class="store-btn">Store</a>
+        <button class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+    <div id="toast-container"></div>
+    <!-- Sidebar for Mobile -->
+    <div class="sidebar bold-text" id="sidebar">
+        <ul class="sidebar-links">
+            <li><a href="#home" class="sidebar-link">Home</a></li>
+            <li><a href="#features" class="sidebar-link">Features</a></li>
+            <li><a href="https://openwilds.com/ticket" class="sidebar-link">Tickets</a></li>
+            <li><a href="https://openwilds.com/rules" class="sidebar-link">Rules</a></li>
+        </ul>
+        <a href="https://store.openwilds.com" class="store-btn">Store</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="scroll-bg" id="scroll-bg"></div>
+        <h1 class="hero-title gt-flaire">OPENWILDS</h1>
+        
+        <p class="hero-description light-text">
+            Embark on an epic adventure in our vibrant Minecraft community. Build, explore, and create unforgettable memories.
+        </p>
+        
+        <button class="play-btn" onclick="showToast('IP Adress Copied!'); clipboardCopy();">
+            Play Now
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="feature-card">
+            <div class="feature-image">
+                <img src="1.png" alt="Feature 1">
+            </div>
+            <div class="feature-content">
+                <h2 class="feature-title gt-flaire">Custom Worlds</h2>
+                <p class="feature-description light-text">
+                    Explore handcrafted worlds designed by our talented team. Each biome tells a unique story, filled with secrets and adventures waiting to be discovered.
+                </p>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-image">
+                <img src="2.png" alt="Feature 2">
+            </div>
+            <div class="feature-content">
+                <h2 class="feature-title gt-flaire">Active Community</h2>
+                <p class="feature-description light-text">
+                    Join thousands of players in our thriving community. Make new friends, team up for challenges, and participate in exciting server-wide events.
+                </p>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-image">
+                <img src="3.png" alt="Feature 3">
+            </div>
+            <div class="feature-content">
+                <h2 class="feature-title gt-flaire">Unique Plugins</h2>
+                <p class="feature-description light-text">
+                    Experience Minecraft like never before with our custom plugins. From enhanced gameplay mechanics to exclusive features, we've got it all.
+                </p>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-image">
+                <img src="4.png" alt="Feature 4">
+            </div>
+            <div class="feature-content">
+                <h2 class="feature-title gt-flaire">Regular Events</h2>
+                <p class="feature-description light-text">
+                    Participate in weekly events, competitions, and challenges. Earn exclusive rewards and show off your skills to the entire community.
+                </p>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-image">
+                <img src="5.png" alt="Feature 5">
+            </div>
+            <div class="feature-content">
+                <h2 class="feature-title gt-flaire">24/7 Support</h2>
+                <p class="feature-description light-text">
+                    Our dedicated staff team is always here to help. Whether you need technical support or just have questions, we're available around the clock.
+                </p>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-image">
+                <img src="6.png" alt="Feature 6">
+            </div>
+            <div class="feature-content">
+                <h2 class="feature-title gt-flaire">Economy System</h2>
+                <p class="feature-description light-text">
+                    Build your fortune with our balanced economy system. Trade with other players, open shops, and become the wealthiest player on the server.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section" id="stat">
+        <div class="stats-container">
+            <div class="stat-item">
+                <h3 class="stat-number gt-flaire">50+</h3>
+                <p class="stat-label light-text">Active Players</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number gt-flaire">10+</h3>
+                <p class="stat-label light-text">Monthly Events</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number gt-flaire">99.9%</h3>
+                <p class="stat-label light-text">Uptime</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number gt-flaire">24/7</h3>
+                <p class="stat-label light-text">Support</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2 class="cta-title gt-flaire">Ready to Start Your Adventure?</h2>
+        <p class="cta-description light-text">
+            Join thousands of players in the ultimate Minecraft experience. Your journey begins here.
+        </p>
+        <button class="play-btn" onclick="showToast('IP Adress Copied!'); clipboardCopy();">
+            Join Now
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title gt-flaire">OPENWILDS</h3>
+                <p class="light-text">Creating unforgettable Minecraft experiences since 2024.</p>
+                <p class="light-text">Made with ❤︎ by rmv_</p>
+            </div>
+            
+            <div class="footer-right">
+                <div class="footer-section">
+                    <ul class="footer-links">
+                        <li><a onclick="showToast('IP Adress Copied!'); clipboardCopy();" href="#" class="light-text">Join now</a></li>
+                        <li><a href="https://openwilds.com/ticket" class="light-text">Tickets</a></li>
+                        <li><a href="https://openwilds.com/rules" class="light-text">Rules</a></li>
+                        <li><a href="https://store.openwilds.com" class="light-text">Store</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <ul class="footer-links">
+                        <li><a href="https://www.instagram.com/openwilds/" class="light-text">Instagram</a></li>
+                        <li><a href="https://www.youtube.com/@DraukooYT" class="light-text">YouTube</a></li>
+                        <li><a href="https://www.tiktok.com/@openwilds" class="light-text">TikTok</a></li>
+                        <li><a href="https://discord.gg/EfRUM3pDfQ" class="light-text">Discord</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p class="light-text">© 2026 OpenWilds. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function clipboardCopy() {
+            navigator.clipboard.writeText("mc.openwilds.com");
+        }
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        });
+
+        overlay.addEventListener('click', () => {
+            menuToggle.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to navbar
+        let lastScroll = 0;
+        const nav = document.querySelector('nav');
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                nav.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+            
+            lastScroll = currentScroll;
+        });
+    </script>
+    <script>
+        const hero = document.getElementById('scroll-bg');
+
+        const words = [
+            "OpenWilds", "Minecraft", "Epic Adventure", "Survival Challenge", "Grand Expeditions", "Explore the Unknown", "Mystery Quest", "Hidden Treasures", "Wilderness Journey", "Creative Build", "Play and Discover", 
+            "Legends of the Wild", "Heroic Journey", "Craft and Survive", "Secrets of the World", "Frontier Exploration", "Voyage Beyond", "Ancient Ruins", "Epic Battles", "Magic Realms",
+            "Fantasy Lands", "Dragons and Heroes", "Caves and Mountains", "Islands of Adventure", "Oceans Uncharted", "Adventure Time", "Survival Skills", "Hidden Paths", "Lost Worlds", "Enchanted Secrets",
+            "Artifacts of Power", "Explorers Unite", "Mystical Realms", "Wildlands Await", "Odyssey Begins", "Treasure Hunt", "Ancient Maps", "Survival Challenges", "Skylands Adventure", "Legends of Old",
+            "Adventure Quest", "Danger Zone", "Epic Crafting", "Survivor Tales", "Journey Beyond", "Uncharted Lands", "Hidden Treasures", "Realm of Legends", "Epic Stories", "Fantasy Adventures",
+            "Heroic Deeds", "Wonders of the World", "Questing Heroes", "Lost Temples", "Magic World", "Dragon Lands", "Adventure Zone", "Hidden Mysteries", "Fantasy Adventures", "Epic Craft",
+            "Journey Beyond Horizons", "Ancient Secrets", "Survival Epic", "Legendary Quests", "Exploration Awaits", "Secret Islands", "Mythical Creatures", "Adventure Legends", "Treasure Seekers", "Mystery Realm"
+        ];
+        const rowsCount = Math.floor(window.innerHeight / 80);
+        const rows = [];
+        const speed = 1.5;
+
+        for(let i=0; i<rowsCount; i++){
+            const row = document.createElement('div');
+            row.classList.add('row');
+            hero.appendChild(row);
+
+            const offset = Math.random() * 500;
+            rows.push({el: row, offset: offset, speed: speed});
+            fillRow(row);
+        }
+
+        function fillRow(row){
+            while(row.scrollWidth < window.innerWidth * 2){
+                const word = document.createElement('span');
+                word.classList.add('word');
+                word.textContent = words[Math.floor(Math.random() * words.length)];
+                row.appendChild(word);
+            }
+        }
+
+        function animate(){
+            rows.forEach(row => {
+                row.offset += row.speed;
+                if(row.offset > row.el.scrollWidth / 2) row.offset = 0;
+                row.el.style.transform = `translateX(-${row.el.scrollWidth / 2 - row.offset}px)`;
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', ()=>{
+            rows.forEach(r=>{
+                r.el.innerHTML = '';
+                fillRow(r.el);
+            });
+        });
+    </script>
+<script src="toast.js"></script>
+<script src="loader.js"></script>
+</body>
+<script src="smooth-scroll.js"></script>
+</html>

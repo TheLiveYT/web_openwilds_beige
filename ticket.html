@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Support Temporarily Unavailable</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="icon.png">
+  <style>
+        @font-face {
+            font-family: 'GT Flaire';
+            src: url('SpicyRice-Regular.ttf') format('opentype');
+            font-weight: 800;
+            font-style: italic;
+        }
+        .gt-flaire {
+            font-family: 'GT Flaire', serif;
+            font-style: italic;
+            font-weight: 800;
+            color: #000;
+        }
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: #f5ebd9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0f172a;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(223, 207, 170, 0.1);
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: #000;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #515151;
+      opacity: 0.85;
+      line-height: 1.5;
+      margin-bottom: 30px;
+    }
+
+    button {
+      background: #5B9EEB;
+      border: none;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    button:hover {
+      background: #5B9EEB;
+      transform: translateY(-2px);
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #515151;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 class="gt-flaire">Support Temporarily Unavailable</h1>
+    <p>
+      Our support ticket system is currently offline.<br />
+      Please join our Discord server to create a ticket.
+    </p>
+
+    <button id="discordBtn">Join our Discord</button>
+
+    <div class="footer">
+      We’ll help you there ❤︎
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("discordBtn").addEventListener("click", () => {
+      window.open("https://discord.gg/Qa6qXDeHtt", "_blank");
+    });
+  </script>
+</body>
+</html>
